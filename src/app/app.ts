@@ -25,10 +25,11 @@ import { filter } from 'rxjs/operators';
   `]
 })
 export class App {
-  showSidebar = false;
+  showSidebar: boolean;
 
   constructor(private router: Router) {
-    this.router.events.pipe(
+    this.showSidebar = router.url !== '/login';
+    router.events.pipe(
       filter(e => e instanceof NavigationEnd)
     ).subscribe((e: any) => {
       this.showSidebar = e.url !== '/login';

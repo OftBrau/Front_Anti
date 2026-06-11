@@ -49,7 +49,7 @@ import { ToastService } from '../../core/services/toast.service';
               @for (item of detalleActual(); track item.id) {
                 <div class="detalle-item">
                   <span>{{ item.producto?.nombre }} × {{ item.cantidad }}</span>
-                  <span>S/ {{ (item.producto?.precio * item.cantidad).toFixed(2) }}</span>
+                  <span>S/ {{ ((item.precio ?? item.producto?.precio) * item.cantidad).toFixed(2) }}</span>
                   <button class="btn-quitar" (click)="quitarProducto(item)">✕</button>
                 </div>
               }
@@ -150,7 +150,7 @@ export class GestionMesasComponent implements OnInit {
         this.pedidoActivo.set(p);
         this.api.get<any[]>(`/pedidos/${p.id}/detalle`).subscribe(dets => {
           this.detalleActual.set(dets);
-          this.totalActual.set(dets.reduce((s, d) => s + d.producto.precio * d.cantidad, 0));
+          this.totalActual.set(dets.reduce((s, d) => s + (d.precio ?? d.producto.precio) * d.cantidad, 0));
         });
       }
     });
@@ -172,12 +172,12 @@ export class GestionMesasComponent implements OnInit {
     } else {
       this.detalleActual.update(d => [...d, { id: Date.now(), producto: p, cantidad: 1 }]);
     }
-    this.totalActual.set(this.detalleActual().reduce((s, d) => s + d.producto.precio * d.cantidad, 0));
+    this.totalActual.set(this.detalleActual().reduce((s, d) => s + (d.precio ?? d.producto.precio) * d.cantidad, 0));
   }
 
   quitarProducto(item: any) {
     this.detalleActual.update(d => d.filter(x => x !== item));
-    this.totalActual.set(this.detalleActual().reduce((s, d) => s + d.producto.precio * d.cantidad, 0));
+    this.totalActual.set(this.detalleActual().reduce((s, d) => s + (d.precio ?? d.producto.precio) * d.cantidad, 0));
   }
 
   verificar() {
